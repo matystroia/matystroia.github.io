@@ -13,7 +13,7 @@
 html {
     background-color: #161616;
     font-size: 1em;
-    line-height: 1.4;
+    /*line-height: 1.4;*/
 }
 
 /*
@@ -98,33 +98,61 @@ textarea {
    ========================================================================== */
 
 @keyframes grow {
-    0% {transform: scale(0);}
-    50% {transform: scale(1.05);}
-    100% {transform: scale(1);}
+    0% {
+        transform: scale(0);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+    100% {
+        transform: scale(1);
+    }
 }
 
 @keyframes grow2 {
-    0% {transform: scale(0);}
-    60% {transform: scale(1);}
-    100% {transform: scale(1);}
+    0% {
+        transform: scale(0);
+    }
+    60% {
+        transform: scale(1);
+    }
+    100% {
+        transform: scale(1);
+    }
 }
 
-@keyframes wobble  {
-  0%  { transform:  rotate(-1deg); }
-  50%  { transform:  rotate(1deg); }
-  100%  { transform:  rotate(-1deg); }
+@keyframes shrink {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+    100% {
+        transform: scale(0);
+    }
+}
+
+@keyframes shrink2 {
+    0% {
+        transform: scale(1);
+    }
+    60% {
+        transform: scale(1);
+    }
+    100% {
+        transform: scale(0);
+    }
 }
 
 .center {
     position: relative;
     margin: auto;
     width: 75%;
-    height: 75%;
-    padding: 10px;
-    overflow: hidden;
 }
 
 .outer {
+    overflow: hidden;
     display: table;
     position: absolute;
     height: 100%;
@@ -145,30 +173,60 @@ textarea {
 .comment-container {
     display: flex;
     flex-direction: column;
-    margin-top: 15px;
-    margin-left: 15px;
 }
 
 .item {
-    flex-grow: 1;
+    width: 100%;
+}
+
+.name-item {
+    height: 15%;
 }
 
 .comment-item {
-    flex-grow: 1;
+    height: 85%;
+}
+
+.input {
+    background: transparent;
+    border: 4px solid #e4e4e4;
+    font-family: 'Montserrat', sans-serif;
+    color: #ffffff;
+    margin-right: 10px;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+#title {
+    text-align: center;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 60px;
+    color: #ff4532;
+}
+
+#title-inner {
+    display: inline-block;
+}
+
+#main {
+    margin-top: 100px;
+    margin-bottom: 100px;
 }
 
 #picture {
-    width: 300px;
-    height: 300px;
+    width: 20%;
+    height: 20%;
     border: 5px solid white;
     border-radius: 25px;
+    margin-bottom: 10%;
 }
 
 #name {
+    margin-bottom: 5px;
+    margin-left: 10px;
     transform-origin: left;
     font-family: 'Montserrat', sans-serif;
     color: #ff4532;
-    font-size: 50px;
 }
 
 #comment {
@@ -176,11 +234,20 @@ textarea {
     font-family: 'Roboto', sans-serif;
     background-color: #e4e4e4;
     border-radius: 25px;
-    padding: 20px;
+    padding-top: 10px;
+    padding-left: 20px;
+    padding-bottom: 10px;
+    padding-right: 20px;
 }
 
 #comment-span {
-    color: rgba(0, 0, 0, 0);
+    /*color: rgba(0, 0, 0, 0);*/
+}
+
+#comment-div {
+    position: relative;
+    top: 25px;
+    margin-left: 20px;
 }
 
 .grow-class {
@@ -193,7 +260,19 @@ textarea {
     animation-duration: .5s;
 }
 
-.wobble-class { animation: wobble 2s infinite ease-out; }
+.shrink-class {
+    animation-name: shrink;
+    animation-duration: .5s;
+}
+
+.shrink-class-2 {
+    animation-name: shrink2;
+    animation-duration: .5s;
+}
+
+.wobble-class {
+    animation: wobble 2s infinite ease-out;
+}
 
 .ti-cursor {
     display: none !important;
@@ -294,9 +373,9 @@ textarea {
 }
 
 @media print,
-       (-webkit-min-device-pixel-ratio: 1.25),
-       (min-resolution: 1.25dppx),
-       (min-resolution: 120dpi) {
+(-webkit-min-device-pixel-ratio: 1.25),
+(min-resolution: 1.25dppx),
+(min-resolution: 120dpi) {
     /* Style adjustments for high resolution devices */
 }
 
@@ -311,8 +390,9 @@ textarea {
     *:before,
     *:after {
         background: transparent !important;
-        color: #000 !important; /* Black prints faster:
-                                   http://www.sanbeiji.com/archives/953 */
+        color: #000 !important;
+        /* Black prints faster:
+                                          http://www.sanbeiji.com/archives/953 */
         box-shadow: none !important;
         text-shadow: none !important;
     }
@@ -334,7 +414,6 @@ textarea {
      * Don't show links that are fragment identifiers,
      * or use the `javascript:` pseudo protocol
      */
-
     a[href^="#"]:after,
     a[href^="javascript:"]:after {
         content: "";
@@ -343,6 +422,7 @@ textarea {
     pre {
         white-space: pre-wrap !important;
     }
+
     pre,
     blockquote {
         border: 1px solid #999;
@@ -353,7 +433,6 @@ textarea {
      * Printing Tables:
      * http://css-discuss.incutio.com/wiki/Printing_Tables
      */
-
     thead {
         display: table-header-group;
     }
