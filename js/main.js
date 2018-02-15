@@ -1,5 +1,6 @@
 let comment;
 let deferred;
+let playerDeferred;
 
 let $main;
 let $picture;
@@ -7,8 +8,44 @@ let $name;
 let $comment;
 let $comment_span;
 
+let player;
+
+function loadIframeApi() {
+    let tag = document.createElement('script');
+
+    tag.src = "https://www.youtube.com/iframe_api";
+    let firstScriptTag = document.getElementsByTagName('script')[0];
+    firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+}
+
+function onYouTubeIframeAPIReady() {
+    player = new YT.Player('player', {
+        height: $(window).height(),
+        width: $(window).width(),
+        playerVars: {'controls': 0},
+        events: {
+            'onStateChange': onPlayerStateChange,
+            'iv_load_policy': 3
+        }
+    });
+}
+
+function onPlayerStateChange(event) {
+    if (event.data === YT.PlayerState.PLAYING) {
+        $('#player').css('display', '');
+        player.unMute();
+        playerDeferred.resolve();
+    }
+}
+
+
 function showComment() {
+    console.log('sent request');
     $.getJSON('https://romani-pe-youtube.herokuapp.com?q=' + $('#query').text(), function (json) {
+        console.log('received response');
+
+        player.loadVideoById(json['videoId'], json['videoLength'] / 2 - 3);
+
         $('#name-span').html('<strong>' + json['name'] + '</strong>' + ' spune:');
         $picture.attr('src', json['profilePicture']).load('load', checkCommentLoad);
         comment = json['comment'];
@@ -17,28 +54,26 @@ function showComment() {
 }
 
 function checkCommentLoad() {
-    setTimeout(function () {
-        fillText();
+    playerDeferred.done(function () {
+        setTimeout(function () {
+            fillText();
 
-        $main.css('left', '');
+            $main.css('left', '');
 
-        $picture.addClass('grow-class');
-        $comment.addClass('grow-class-2');
-        $name.addClass('grow-class-2');
+            $picture.addClass('grow-class');
+            $comment.addClass('grow-class-2');
+            $name.addClass('grow-class-2');
 
-        let typeInstance = new TypeIt('#comment-span', {
-            strings: comment,
-            speed: 50,
-            autoStart: false,
-            cursor: false
-        });
+            let typeInstance = new TypeIt('#comment-span', {
+                strings: comment,
+                speed: 50,
+                autoStart: false,
+                cursor: false
+            });
 
-        checkTypeComplete(typeInstance);
-    }, 500);
-    // if ($picture.attr('src') === 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=' || !$comment_span.html())
-    //     return setTimeout(checkCommentLoad, 250);
-
-
+            checkTypeComplete(typeInstance);
+        }, 500);
+    });
 }
 
 function checkTypeComplete(typeInstance) {
@@ -51,7 +86,7 @@ function checkTypeComplete(typeInstance) {
         $picture.attr('class', 'shrink-class');
         $comment.attr('class', 'comment-item shrink-class-2');
         $name.attr('class', 'name-item shrink-class-2');
-    }, 1000);
+    }, 1000 * 6);
 }
 
 function fillText() {
@@ -70,6 +105,11 @@ function fillText() {
 }
 
 function resetElements() {
+    if (player !== undefined) {
+        $('#player').css('display', 'none');
+        player.mute();
+    }
+
     $('#main').css('left', '-100%');
 
     $picture.attr('class', '');
@@ -89,6 +129,8 @@ function newDeferred() {
     resetElements();
 
     deferred = $.Deferred();
+
+    playerDeferred = $.Deferred();
     showComment();
 
     deferred.done(function () {
@@ -97,17 +139,22 @@ function newDeferred() {
 }
 
 $(window).on('load', function () {
+    loadIframeApi();
+
     $main = $('#main');
     $picture = $('#picture');
     $name = $('#name');
     $comment = $('#comment');
     $comment_span = $('#comment-span');
 
-    $("#query").keypress(function(e){ return e.which !== 13; });
+    $("#query").keypress(function (e) {
+        return e.which !== 13;
+    });
 
     $picture.on('webkitAnimationEnd oanimationend msAnimationEnd animationend', function (e) {
-        if (e.originalEvent.animationName === "shrink")
+        if (e.originalEvent.animationName === "shrink") {
             deferred.resolve();
+        }
     });
 
     newDeferred();
